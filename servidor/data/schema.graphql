@@ -1,0 +1,153 @@
+# Schema es el que comunica los datos con graphql 
+ 
+ type Cliente {
+        id:ID
+        nombre: String
+        apellido: String
+        empresa: String
+        emails: [Email]
+        edad: Int
+        tipo: TipoCliente
+    }
+
+    type Email{
+        email:String
+    }
+
+     type Pedido{
+        id: ID
+        pedido: [PedidoProducto]
+        total: Int
+        fecha: String
+        cliente: ID
+        estado: EstadoPedido
+    }
+
+    type PedidoProducto{
+        id: ID
+        cantidad: Int
+    }
+
+    type Producto{
+           id: ID
+        nombre: String!
+        precio: Int! #si tiene decimales puede ser float
+        stock: Int!
+    }
+    type ClienteTotal{
+        total: Float
+        cliente: [Cliente]
+    }
+    type VendedorTotal{
+        total: Float
+        vendedor: [Usuario]
+    }
+    """ Asigna la categoria de cliente """
+    type Token{
+        token: String!
+    }
+
+    type Usuario{
+        usuario: String
+        id: ID
+        nombre: String
+        rol: String
+
+    }
+
+    enum TipoCliente{
+        BASICO
+        PREMIUM
+    }
+
+    enum EstadoPedido{
+        PENDIENTE
+        COMPLETADO
+        CANCELADO
+    }
+
+    type Query{
+        getClientes(limite:Int, offset:Int, vendedor:String) : [Cliente]
+        getCliente(id:ID): Cliente
+        totalClientes(vendedor:String) : String
+        #Obtener Productos
+        obtenerProductos(limite: Int, offset: Int, stock: Boolean): [Producto] #el mismo nombre que el metodo del resolver 
+        obtenerProducto(id: ID!): Producto
+        totalProductos: String
+        #pedidos
+        obtenerPedidos(cliente:ID) : [Pedido]
+        # obtenerPedidos(cliente:ID) : [Pedido]
+        #graficas
+        topClientes:[ClienteTotal]
+        topVendedores:[VendedorTotal]
+
+        #Usuarios
+        obtenerUsuario : Usuario
+
+        
+    }
+
+    input EmailInput{
+        email:String
+    }
+    """ Campos para clientes nuevos """
+
+    input ClienteInput{
+        id:ID
+        nombre: String!
+        apellido: String!
+        empresa: String!
+        emails: [EmailInput]
+        edad: Int!
+        tipo: TipoCliente!
+        pedidos:[PedidoInput]
+        vendedor: ID
+    }
+
+    input ProductoInput{
+        id: ID
+        nombre: String!
+        precio: Int! #si tiene decimales puede ser float
+        stock: Int!
+    }
+
+    input PedidoInput{
+        id: ID
+        pedido: [PedidoProductoInput]
+        total: Int
+        fecha: String
+        cliente: ID
+        estado: EstadoPedido
+        vendedor: ID
+    }
+
+    input PedidoProductoInput{
+        id: ID
+        cantidad: Int
+    }
+
+    """ Mutations para crear nuevos clientes """
+    type Mutation{
+        #Nombre del resolver, Input con datos y valor que retorna
+    """ Te permite crear nuevos clientes """
+        crearCliente(input:ClienteInput) : Cliente
+        actualizarCliente(input:ClienteInput):Cliente
+        eliminarCliente(id:ID!):String
+
+        #para crear nuevos productos
+        nuevoProducto(input:ProductoInput): Producto
+        actualizarProducto(input:ProductoInput):Producto
+        eliminarProducto(id:ID!): String
+        #pedidos
+        nuevoPedido(input:PedidoInput):Pedido
+        # ":" significa que nos retorna un pedido
+        actualizarEstado(input:PedidoInput):String
+        #usuarios
+        crearUsuario(usuario: String!, nombre: String!, password: String!, rol:String!) : String
+        autenticarUsuario(usuario:String!, password: String!) : Token
+    }
+
+#     // crearCliente(input:ClienteInput) : Cliente
+# // retorna un cliente
+
+
